@@ -1,14 +1,15 @@
 package com.example.android.quakereport;
+
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
                     R.layout.list_item, parent, false);
         }
 
-        final Earthquake currentEarthquake = getItem(position);
+        Earthquake currentEarthquake = getItem(position);
 
         TextView magnitude = (TextView) listItemView.findViewById(R.id.magnitude);
         magnitude.setText(currentEarthquake.getMagnitude());
@@ -42,9 +43,31 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         TextView location = (TextView) listItemView.findViewById(R.id.location);
         location.setText(currentEarthquake.getLocation());
 
-        TextView date = (TextView) listItemView.findViewById(R.id.date);
-        date.setText(currentEarthquake.getDate());
+
+        Date dateObject = new Date(currentEarthquake.getDate());
+
+        TextView dateDay = (TextView) listItemView.findViewById(R.id.dateDay);
+        dateDay.setText( formatDate(dateObject) );
+
+        TextView dateHour = (TextView) listItemView.findViewById(R.id.dateHour);
+        dateHour.setText( formatTime(dateObject) );
 
         return listItemView;
+    }
+
+    /**
+     * Retorna a data string formatada (i.e. "Mar 3, 1984") de um objeto Date.
+     */
+    private String formatDate(Date dateObject) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        return dateFormat.format(dateObject);
+    }
+
+    /**
+     * Retorna a data string formatada (i.e. "4:30 PM") de um objeto Date.
+     */
+    private String formatTime(Date dateObject) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        return timeFormat.format(dateObject);
     }
 }

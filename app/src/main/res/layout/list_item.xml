@@ -1,26 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/magnitude"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="33444"/>
+        android:layout_weight="1"
+        tools:text="3.1"/>
     <TextView
         android:id="@+id/location"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="San Francisco"/>
+        android:textStyle="bold"
+        tools:text="San Francisco"/>
     <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
+        android:id="@+id/dateDay"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="12/12/12"/>
+        android:layout_weight="1"
+        tools:text="Dec 31, 2011"/>
+
+    <TextView
+        android:id="@+id/dateHour"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:text="11:15 AM" />
 
 
 </LinearLayout>
