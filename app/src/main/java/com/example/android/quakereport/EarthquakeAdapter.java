@@ -1,13 +1,19 @@
 package com.example.android.quakereport;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +23,8 @@ import java.util.List;
  */
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
+
+    private static final String LOCATION_SEPARATOR = " of ";
 
     public EarthquakeAdapter(Context context, List objects) {
         super(context, 0, objects);
@@ -35,22 +43,58 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
                     R.layout.list_item, parent, false);
         }
 
-        Earthquake currentEarthquake = getItem(position);
+        final Earthquake currentEarthquake = getItem(position);
 
         TextView magnitude = (TextView) listItemView.findViewById(R.id.magnitude);
-        magnitude.setText(currentEarthquake.getMagnitude());
+
+        // Sete a cor de fundo apropriada no círculo de magnitude.
+        // Busque o fundo do TextView, que é um GradientDrawable.
+        GradientDrawable magnitudeCircle = (GradientDrawable) magnitude.getBackground();
+
+        // Obtenha a cor de fundo apropriada baseada na magnitude do terremoto atual
+        int magnitudeColor = getMagnitudeColor(currentEarthquake.getMagnitude());
+
+        // Sete a cor no círculo de magnitude
+        magnitudeCircle.setColor(magnitudeColor);
+
+
+        DecimalFormat formatter = new DecimalFormat("0.0");
+        magnitude.setText( formatter.format(currentEarthquake.getMagnitude()) );
 
         TextView location = (TextView) listItemView.findViewById(R.id.location);
-        location.setText(currentEarthquake.getLocation());
+        TextView distance = (TextView) listItemView.findViewById(R.id.distance);
+
+        String mLocation = currentEarthquake.getLocation();
+        if ( mLocation.contains(LOCATION_SEPARATOR) ) {
+            String[] localParts = mLocation.split(LOCATION_SEPARATOR);
+            distance.setText(localParts[0]+LOCATION_SEPARATOR);
+            location.setText(localParts[1]);
+        } else {
+            distance.setText(R.string.near_the);
+            location.setText(mLocation);
+        }
 
 
         Date dateObject = new Date(currentEarthquake.getDate());
 
-        TextView dateDay = (TextView) listItemView.findViewById(R.id.dateDay);
+        TextView dateDay = (TextView) listItemView.findViewById(R.id.date);
         dateDay.setText( formatDate(dateObject) );
 
-        TextView dateHour = (TextView) listItemView.findViewById(R.id.dateHour);
+        TextView dateHour = (TextView) listItemView.findViewById(R.id.time);
         dateHour.setText( formatTime(dateObject) );
+
+        // link to the site
+        LinearLayout line = (LinearLayout) listItemView.findViewById(R.id.line);
+        line.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse( currentEarthquake.getUrl() ));
+                        EarthquakeAdapter.super.getContext().startActivity(intent);
+                    }
+                }
+        );
 
         return listItemView;
     }
@@ -70,4 +114,44 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
         return timeFormat.format(dateObject);
     }
+
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorResourceId;
+        int magnitudeFloor = (int) Math.floor(magnitude);
+        switch (magnitudeFloor) {
+            case 0:
+            case 1:
+                magnitudeColorResourceId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorResourceId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorResourceId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorResourceId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorResourceId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorResourceId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorResourceId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorResourceId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorResourceId = R.color.magnitude9;
+                break;
+            default:
+                magnitudeColorResourceId = R.color.magnitude10plus;
+                break;
+        }
+        return ContextCompat.getColor(getContext(), magnitudeColorResourceId);
+    }
+
 }
