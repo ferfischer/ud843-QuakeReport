@@ -1,16 +1,13 @@
 package com.example.android.quakereport;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -82,19 +79,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         TextView dateHour = (TextView) listItemView.findViewById(R.id.time);
         dateHour.setText( formatTime(dateObject) );
-
-        // link to the site
-        LinearLayout line = (LinearLayout) listItemView.findViewById(R.id.line);
-        line.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse( currentEarthquake.getUrl() ));
-                        EarthquakeAdapter.super.getContext().startActivity(intent);
-                    }
-                }
-        );
 
         return listItemView;
     }
