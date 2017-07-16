@@ -2,8 +2,11 @@ package com.example.android.quakereport;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -46,6 +50,12 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
 
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         earthquakeListView.setEmptyView(mEmptyStateTextView);
+
+        if (!hasConnection()) {
+            hideLoadingIndicator();
+            mEmptyStateTextView.setText("No Internet Connection.");
+            return;
+        }
 
         // Create a new adapter that takes an empty list of earthquakes as input
         mAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
@@ -99,17 +109,19 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
 
         Log.d(LOG_TAG, "Called onLoadFinished()");
 
+        hideLoadingIndicator();
+
+        // Seta texto do estado vazio para mostrar "Nenhum terremoto encontrado."
+        mEmptyStateTextView.setText(R.string.nothing_found);
+
         // Limpa o adapter de dados de earthquake anteriores
         mAdapter.clear();
 
-        // Se há uma lista válida de {@link Earthquake}s, então os adiciona ao data set do adapter.
-        // Isto ativará a atualização da ListView.
+        // Se há uma lista válida de {@link Earthquake}s, então adiciona-os ao data set do adapter.
+        // Isto irá ativar a ListView para atualizar.
         if (earthquakes != null && !earthquakes.isEmpty()) {
             mAdapter.addAll(earthquakes);
         }
-
-        // Seta o texto de estado vazio para mostrar "Nenhum terremoto encontrado."
-        mEmptyStateTextView.setText(R.string.nothing_found);
     }
 
     @Override
@@ -119,6 +131,21 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
 
         // Reseta o Loader, então podemos limpar nossos dados existentes.
         mAdapter.clear();
+    }
+
+    private boolean hasConnection()
+    {
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    private void hideLoadingIndicator(){
+        // Esconde o indicador de carregamento porque os dados foram carregados
+        View loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
     }
 
 }

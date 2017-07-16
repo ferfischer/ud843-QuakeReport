@@ -47,6 +47,13 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
             return null;
         }
 
+        // just a test to see the progress bar working
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // Realiza requisição de rede, decodifica a resposta, e extrai uma lista de earthquakes.
         List<Earthquake> earthquakes = QueryUtils.fetchEarthquakesData(mUrl);
         return earthquakes;
